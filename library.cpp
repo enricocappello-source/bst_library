@@ -73,24 +73,21 @@ void insert(Node* a, int n) {
                 return;
             }
         }
-    } while (a->val != 0);
+    } while (true);
 }
 
 bool recursive_bynary_search(Node* a, int n) {
-    if (a->val == n) {
+    if (a == nullptr) {
+        return false;
+    }else if (a->val == n) {
         a->c += 1;
         return true;
-    }else if (a->left == nullptr || a->right == nullptr) {
-        return false;
     }else if (a->val < n) {
         a = a->right;
-        return true;
     }else if (a->val > n) {
         a = a->left;
-        return true;
     }
-    recursive_bynary_search(a,n);
-    return true;
+    return recursive_bynary_search(a,n);
 }
 
 bool bynary_search(Node* a, int n) {
