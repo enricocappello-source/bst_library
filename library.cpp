@@ -34,11 +34,12 @@ struct Node {
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-void recursive_insert(Node* a, int n) {             //it doesnt work
+void recursive_insert(Node* &a, int n) {
     if (a == nullptr) {
         a = new Node(n);
         return;
-    }else if(a->val == n) {
+    }
+    if(a->val == n) {
         a->c += 1;
         return;
     }else if (a->val < n) {
@@ -81,6 +82,7 @@ Node* recursive_bynary_search(Node* a, int n) {
     }else if (a->val > n) {
         return recursive_bynary_search(a->left,n);
     }
+    return nullptr;
 }
 
 bool bynary_search(Node* a, int n) {
@@ -130,18 +132,15 @@ void pre_order(Node* root) {
 }
 
 int high(Node* root,int h=1) {
-    /*if (root->left == nullptr && root->right == nullptr) {
-        return 1;
-    }*/
-    if (root->left == nullptr) {
-        return h;
+    if (root == nullptr) {
+        return 0;
     }
-    high(root->left);
-    if (root->right == nullptr) {
-        return h;
+    int h_left = high(root->left), h_right = high(root->right);
+    if (h_left >= h_right) {
+        return h_left+1;
+    }else {
+        return h_right+1;
     }
-    high(root->right);
-    return h;
 }
 
 void delete_a_node(Node* root, int number) {
@@ -225,7 +224,7 @@ int main() {
                 } else {
                     cout << "Enter value to search: ";
                     cin >> n;
-                    if (recursive_bynary_search(root, n) == nullptr) {
+                    if (recursive_bynary_search(root, n) != nullptr) {
                         cout << "Value " << n << " found." << endl;
                     } else {
                         cout << "Value " << n << " not found." << endl;
