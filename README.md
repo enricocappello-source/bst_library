@@ -5,7 +5,8 @@ the code is write entirely with c++.
 
 
 
-Feature
+## Feature:
+
  -Recursive insert.        Successfully adds new nodes while maintaining the BST invariant.
 
  -Recursive search.        Efficiently finds a target value in the tree.
