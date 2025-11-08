@@ -6,29 +6,34 @@ struct Node {
     int c;
     Node* right;
     Node* left;
+    int lvl;
     Node () {
         right = nullptr;
         left = nullptr;
         c = 0;
         val = 0;
+        lvl = 1;
     }
-    Node (int n) {
+    Node (int n, Node* root) {
         right = nullptr;
         left = nullptr;
         c = 0;
         val = n;
+        lvl = root->lvl+1;
     }
     Node (Node* a) {
         right = nullptr;
         left = nullptr;
         c = 1;
         val = a->val;
+        lvl = a->lvl+1;
     }
     Node (Node &a) {
         right = a.right;
         left = a.left;
         c = 1;
         val = a.val;
+        lvl = a.lvl+1;
     }
 };
 
@@ -41,13 +46,13 @@ void recursive_insert(Node* a, int n) {
     }else if (a->val < n) {
         a = a->right;
         if (a == nullptr) {
-            a = new Node(n);
+            a = new Node(n, a);
             return;
         }
     }else if (a->val > n) {
         a = a->left;
         if (a == nullptr) {
-            a = new Node(n);
+            a = new Node(n, a);
             return;
         }
     }
@@ -63,13 +68,13 @@ void insert(Node* a, int n) {
         }else if (a->val < n) {
             a = a->right;
             if (a == nullptr) {
-                a = new Node(n);
+                a = new Node(n, a);
                 return;
             }
         }else if (a->val > n) {
             a = a->left;
             if (a == nullptr) {
-                a = new Node(n);
+                a = new Node(n, a);
                 return;
             }
         }
@@ -106,12 +111,54 @@ bool bynary_search(Node* a, int n) {
     return false;
 }
 
+void in_order(Node* root) {
+    if (root->lvl == 1) {
+        cout << root->val << ",";
+    } 
+    if (root->left == nullptr) {
+        cout << root->val << ",";
+        return;
+    }
+    in_order(root->left);
+    if (root->right == nullptr) {
+        cout << root->val << ",";
+        return;
+    }
+    in_order(root->right);
+    return;
+}
+
+void post_order(Node* root) {
+    if (root->lvl == 1) {
+        cout << root->val << ",";
+    } 
+    if (root->right == nullptr) {
+        cout << root->val << ",";
+        return;
+    }
+    post_order(root->right);
+    if (root->left == nullptr) {
+        cout << root->val << ",";
+        return;
+    }
+    post_order(root->left);
+    return;
+}
+
+void preorder() {
+
+}
+
+int high(Node* root) {
+    return root->lvl;
+}
+
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 int main() {
     int n;
     cout << "write a number you want in the root: ";
     cin >> n;
-    Node* root = new Node(n);
+    Node* root = new Node(n, root);
     return 0;
 }
