@@ -6,57 +6,46 @@ struct Node {
     int c;
     Node* right;
     Node* left;
-    int lvl;
-    Node () {
-        right = nullptr;
-        left = nullptr;
-        c = 0;
-        val = 0;
-        lvl = 1;
-    }
-    Node (int n, Node* root) {
-        right = nullptr;
-        left = nullptr;
-        c = 0;
-        val = n;
-        lvl = root->lvl+1;
-    }
-    Node (Node* a) {
+    Node () {                       //basic constructor
         right = nullptr;
         left = nullptr;
         c = 1;
-        val = a->val;
-        lvl = a->lvl+1;
+        val = 0;
     }
-    Node (Node &a) {
+    Node (int n) {                  //constructor with the int value n
+        right = nullptr;
+        left = nullptr;
+        c = 1;
+        val = n;
+    }
+    Node (Node* a) {                //copy constructor with ptr
+        right = a->right;
+        left = a->left;
+        c = a->c;
+        val = a->val;
+    }
+    Node (Node &a) {                //copy constructor without ptr
         right = a.right;
         left = a.left;
-        c = 1;
+        c = a.c;
         val = a.val;
-        lvl = a.lvl+1;
     }
 };
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-void recursive_insert(Node* a, int n) {
-    if (a->val == n) {
+void recursive_insert(Node* a, int n) {             //it doesnt work
+    if (a == nullptr) {
+        a = new Node(n);
+        return;
+    }else if(a->val == n) {
         a->c += 1;
         return;
     }else if (a->val < n) {
-        a = a->right;
-        if (a == nullptr) {
-            a = new Node(n, a);
-            return;
-        }
+        recursive_insert(a->right, n);
     }else if (a->val > n) {
-        a = a->left;
-        if (a == nullptr) {
-            a = new Node(n, a);
-            return;
-        }
+        recursive_insert(a->left, n);
     }
-    recursive_insert(a,n);
     return;
 }
 
@@ -68,31 +57,30 @@ void insert(Node* a, int n) {
         }else if (a->val < n) {
             a = a->right;
             if (a == nullptr) {
-                a = new Node(n, a);
+                a = new Node(n);
                 return;
             }
         }else if (a->val > n) {
             a = a->left;
             if (a == nullptr) {
-                a = new Node(n, a);
+                a = new Node(n);
                 return;
             }
         }
     } while (true);
 }
 
-bool recursive_bynary_search(Node* a, int n) {
+Node* recursive_bynary_search(Node* a, int n) {
     if (a == nullptr) {
-        return false;
+        return nullptr;
     }else if (a->val == n) {
         a->c += 1;
-        return true;
+        return a;
     }else if (a->val < n) {
-        a = a->right;
+        return recursive_bynary_search(a->right,n);
     }else if (a->val > n) {
-        a = a->left;
+        return recursive_bynary_search(a->left,n);
     }
-    return recursive_bynary_search(a,n);
 }
 
 bool bynary_search(Node* a, int n) {
@@ -112,53 +100,188 @@ bool bynary_search(Node* a, int n) {
 }
 
 void in_order(Node* root) {
-    if (root->lvl == 1) {
-        cout << root->val << ",";
-    } 
-    if (root->left == nullptr) {
-        cout << root->val << ",";
+    if (root == nullptr) {
         return;
     }
     in_order(root->left);
-    if (root->right == nullptr) {
-        cout << root->val << ",";
-        return;
-    }
+    cout << root->val << ",";
     in_order(root->right);
     return;
 }
 
 void post_order(Node* root) {
-    if (root->lvl == 1) {
-        cout << root->val << ",";
-    } 
-    if (root->right == nullptr) {
-        cout << root->val << ",";
+    if (root == nullptr) {
         return;
     }
     post_order(root->right);
-    if (root->left == nullptr) {
-        cout << root->val << ",";
-        return;
-    }
+    cout << root->val << ",";
     post_order(root->left);
     return;
 }
 
-void preorder() {
-
+void pre_order(Node* root) {
+    if (root == nullptr) {
+        return;
+    }
+    cout << root->val << " ";
+    pre_order(root->left);
+    pre_order(root->right);
+    return;
 }
 
-int high(Node* root) {
-    return root->lvl;
+int high(Node* root,int h=1) {
+    /*if (root->left == nullptr && root->right == nullptr) {
+        return 1;
+    }*/
+    if (root->left == nullptr) {
+        return h;
+    }
+    high(root->left);
+    if (root->right == nullptr) {
+        return h;
+    }
+    high(root->right);
+    return h;
+}
+
+void delete_a_node(Node* root, int number) {
+    Node* a = recursive_bynary_search(root, number);
+    if (a->left == nullptr && a->right == nullptr) {
+        delete a;
+        return;
+    } else if (a->left != nullptr || a->right != nullptr) {
+        if (a->left != nullptr) {
+            Node* ptr = a;
+            a->left = a;
+            a->left = ptr->left;
+            delete ptr;
+        } else if (a->right != nullptr) {
+            Node* ptr = a;
+            a->right = a;
+            a->right = ptr->right;
+            delete ptr;
+        }
+        return;
+    } else if (a->left != nullptr && a->right != nullptr) {
+        Node* ptr = a->right;
+        while (ptr->left != nullptr) {
+            ptr = ptr->left;
+        }
+        ptr->left = a->left;
+        ptr->right = a->right;
+        delete a;
+        return;
+    }
+    return;
 }
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 int main() {
-    int n;
-    cout << "write a number you want in the root: ";
-    cin >> n;
-    Node* root = new Node(n, root);
+    int choice, n;
+    Node* root = nullptr;
+    bool rootCreated = false;
+
+    while (true) {
+        cout << endl << "BST Menu:" << endl;
+        cout << "1. Create Root" << endl;
+        cout << "2. Insert Value" << endl;
+        cout << "3. Search Value" << endl;
+        cout << "4. In-Order Traversal" << endl;
+        cout << "5. Post-Order Traversal" << endl;
+        cout << "6. Pre-Order Traversal" << endl;
+        cout << "7. Get Height" << endl;
+        cout << "8. delete a node" << endl;
+        cout << "9. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                if (!rootCreated) {
+                    cout << "Enter value for root: ";
+                    cin >> n;
+                    root = new Node();
+                    root->val = n;
+                    rootCreated = true;
+                    cout << "Root created with value " << n << endl;
+                } else {
+                    cout << "Root already exists." << endl;
+                }
+                break;
+            case 2:
+                if (!rootCreated) {
+                    cout << "Create root first." << endl;
+                } else {
+                    cout << "Enter value to insert: ";
+                    cin >> n;
+                    recursive_insert(root, n);
+                    cout << "Value " << n << " inserted." << endl;
+                }
+                break;
+            case 3:
+                if (!rootCreated) {
+                    cout << "Create root first." << endl;
+                } else {
+                    cout << "Enter value to search: ";
+                    cin >> n;
+                    if (recursive_bynary_search(root, n) == nullptr) {
+                        cout << "Value " << n << " found." << endl;
+                    } else {
+                        cout << "Value " << n << " not found." << endl;
+                    }
+                }
+                break;
+            case 4:
+                if (!rootCreated) {
+                    cout << "Create root first." << endl;
+                } else {
+                    cout << "In-Order Traversal: ";
+                    in_order(root);
+                    cout << endl;
+                }
+                break;
+            case 5:
+                if (!rootCreated) {
+                    cout << "Create root first." << endl;
+                } else {
+                    cout << "Post-Order Traversal: ";
+                    post_order(root);
+                    cout << endl;
+                }
+                break;
+            case 6:
+                if (!rootCreated) {
+                    cout << "Create root first." << endl;
+                } else {
+                    cout << "Pre-Order Traversal: ";
+                    pre_order(root);
+                    cout << endl;
+                }
+                break;
+            case 7:
+                if (!rootCreated) {
+                    cout << "Create root first." << endl;
+                } else {
+                    cout << "Height of tree: " << high(root) << endl;
+                }
+                break;
+            case 8:
+                if (!rootCreated) {
+                    cout << "Create root first." << endl;
+                } else {
+                    cout << "Enter value to delete: ";
+                    cin >> n;
+                    delete_a_node(root, n);
+                    cout << "The node is deleted successful" << endl;
+                }
+                break;
+            case 9:
+                cout << "Exiting..." << endl;
+                return 0;
+            default:
+                cout << "Invalid choice. Try again." << endl;
+        }
+    }
     return 0;
 }
