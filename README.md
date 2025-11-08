@@ -1,11 +1,11 @@
 # C++ Binary Search Tree (BST)
-Project Overview
+### Project Overview
 This project contain a bynary search tree (BST) and the main function to menage the structure.
 the code is write entirely with c++.
 
 
 
-## Feature:
+### Feature:
 
  -Recursive insert.        Successfully adds new nodes while maintaining the BST invariant.
 
